@@ -31,7 +31,7 @@
 1:TrimPlus, TrimPlus.version, KSP_TrimPlus
 
 # 2:PROJNAME, PROJFILE, VERSIONFILE, PLUGINSFOLDER
-2:TrimPlus,TrimPlus/TrimPlus.csproj,TrimPlus.version,GameData/TrimPlus/Plugins
+2:TrimPlus,source/TrimPlus.csproj,TrimPlus.version,GameData/TrimPlus/Plugins
 
 # 3:SOURCEFILE, DESTDIR
 3:TrimPlus.version,GameData/TrimPlus
