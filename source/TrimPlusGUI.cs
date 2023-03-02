@@ -1,19 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
+using KSP.UI.Screens;
+
+using static TrimPlus.RegisterToolbar;
+using ToolbarControl_NS;
+using ClickThroughFix;
+using SpaceTuxUtility;
+
 
 namespace TrimPlus
 {
-    [KSPAddon(KSPAddon.Startup.MainMenu, false)]
+    [KSPAddon(KSPAddon.Startup.SpaceCentre, false)]
     class TrimPlusSettings : MonoBehaviour
     {
+        internal const string MODID = "TrimPlus";
+        internal const string MODNAME = "TrimPlus";
+
+        static ToolbarControl toolbarControl;
 
         KeyBinding listeningFor = null;
         bool listeningForPrimary;
         
         static bool likeAVirgin = true;
+
+        int enterExitWinId;
 
         public void Awake()
         {
@@ -23,7 +33,27 @@ namespace TrimPlus
                 likeAVirgin = false;
             }
             TrimPlus.SetDefaultBindings();
-        }        
+        }
+
+        void Start()
+        {
+            if (toolbarControl == null)
+            {
+                toolbarControl = gameObject.AddComponent<ToolbarControl>();
+                toolbarControl.AddToAllToolbars(this.ToggleMainWindow, this.ToggleMainWindow,
+                        ApplicationLauncher.AppScenes.SPACECENTER,
+                    MODID,
+                    "TrimPlusButton",
+                    "TrimPlus/PluginData/TrimPlus",
+                    "TrimPlus/PluginData/TrimPlus",
+                    MODNAME
+                );
+            }
+            enterExitWinId = WindowHelper.NextWindowId("FRSWin");
+
+        }
+        bool Active = false;
+        void ToggleMainWindow() { this.Active = !this.Active; }
 
         public void Update()
         {
@@ -68,28 +98,19 @@ namespace TrimPlus
 
 
         Rect windowRect = new Rect(0, 0, 600, 50);
-        bool collapsed = true;
 
         public void OnGUI()
         {
             GUI.skin = HighLogic.Skin;
-            windowRect = GUILayout.Window(3453466, windowRect, windowFunc, "TRIM PLUS", GUILayout.Width(600f));
+            if (Active)
+            windowRect = ClickThruBlocker.GUILayoutWindow(enterExitWinId, windowRect, windowFunc, "TRIM PLUS", GUILayout.Width(600f));
             //windowRect.height = 0f;
         }
 
         public void windowFunc(int id)
         {
-            GUILayout.BeginArea(new Rect(2f, 2f, 40f, 40f));
-            if (GUI.Button(new Rect(0, 0, 30, 30), collapsed ? "+" : "-"))
-            {
-                collapsed = !collapsed;
-                if (collapsed)
-                    windowRect.height = 42;
-            }
-            GUILayout.EndArea();
             GUILayout.Space(3);
             
-            if (!collapsed)
             {
                 for (int i = 0; i < (int)BindingName.COUNT; i++)
                 {
